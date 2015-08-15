@@ -1,0 +1,8 @@
+*.pyc
+__pycache__
+myvenv
+db.sqlite3
+db.mysql
+.DS_Store
+settings.py
+cred.py
