@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+# from nice_simple_app_site.settings import AUTH_USER_MODEL
 
 # an object containing all the scraped data of a user's Facebook profile
 
@@ -33,14 +34,18 @@ class Profile(models.Model):
         self.collected_date = timezone.now()
         self.save()
 
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.pk
+        return str(self.pk)
 
 
 # A viewable object that displays the results of one or two profiles
 
 class Comparison(models.Model):
 
+    profile_url = models.URLField()
     collected_date = models.DateTimeField(default=timezone.now)
     collected_by = models.ForeignKey('auth.User')
     l_profile = models.ForeignKey(Profile, null=True, related_name='l_profile')
@@ -51,4 +56,4 @@ class Comparison(models.Model):
         self.save()
 
     def __str__(self):
-        return self.pk
+        return str(self.pk)

@@ -6,3 +6,9 @@ db.mysql
 .DS_Store
 settings.py
 cred.py
+config.py
+permissions.py
+ghostdriver.log
+myenvtwo
+phantomjs
+py2

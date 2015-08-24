@@ -1,0 +1,24 @@
+{% extends "nice_simple_app/base.html" %}
+
+{% block content %}
+
+<table class="table table-hover">
+    <tr>
+        <th>Collected by</th>
+        <th>Date</th>
+        <th>Viewing</th>
+    </tr>
+
+    {% for comparison in comparisons %}
+
+    <tr>
+        <td>{{ comparison.collected_by }}</td>
+        <td><a href="{% url 'comparison_page' pk=comparison.pk %}">{{ comparison.collected_date }}</a></td>
+        <td>{{ comparison.name }}</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+{% endblock content %}
+

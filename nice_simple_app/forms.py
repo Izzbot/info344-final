@@ -1,7 +1,7 @@
 from django import forms
-from .models import Profile
+from .models import Comparison
 
-class ProfileForm(forms.ModelForm):
+class ComparisonForm(forms.ModelForm):
     class Meta:
-        models = Profile
-        fields = ('img_url')
+        model = Comparison
+        fields = ('profile_url',)

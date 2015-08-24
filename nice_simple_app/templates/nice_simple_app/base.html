@@ -1,16 +1,52 @@
 <!DOCTYPE html>
+{% load staticfiles %}
+{% load account %}
+{% load socialaccount %}
 <html>
     <head>
         <title>Nice Simple App</title>
+        <title>{% if request.user.is_authenticated %}Logged In{% else %}Not Logged In{% endif %}</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="{% static 'css/nice_simple_app.css' %}">
     </head>
-    <body>
-        <div>
-            <h1><a href="">Nice Simple App</a></h1>
+    <body class="{% if request.user.is_authenticated %}logged-in{% else %}logged-out{% endif %}">
+        <h1><a href="{% url 'home_page' %}">Nice Simple App</a></h1>
+
+        <div class="page-header">
+            {% if request.user.is_authenticated %}
+                <a href="/info344final/accounts/logout/" class="pull-right">Logout</a>
+                <p><b>{% user_display user %}</b> has logged in...</p>
+            {% else %}
+                <p>Please login via...</p>
+                <buttn class="btn btn-default" type="submit"><a href="{% provider_login_url 'facebook' %}">Facebook</a></buttn>
+            {% endif %}
+
+
         </div>
-        <p>This is only the beginning.</p>
-        <div>
+
+
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-left">
+                    <!--<li><a href="{% url 'home_page' %}">Home</a></li>-->
+                    <li><a href="{% url 'about_page' %}">About</a></li>
+                </ul>
+            </div>
+
+        </nav>
+
+        <div class="container-fluid">
             {% block content %}
             {% endblock %}
+
+            {% for error in errors %}
+            <div>
+                <mark>{{ error }}</mark>
+            </div>
+            {% endfor %}
+
         </div>
+
     </body>
 </html>
