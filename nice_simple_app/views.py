@@ -21,15 +21,15 @@ from nice_simple_app.permissions import IsOwnerOrReadOnly
 from django.http import Http404
 from ratelimit.mixins import RatelimitMixin
 
-
-
-
 from .models import Profile, Comparison
 from .serializers import ProfileSerializer, UserSerializer
 from .forms import ComparisonForm
-
 from ratelimit.decorators import ratelimit
 # from nice_simple_app_site.settings import LOGIN_URL
+from allauth.socialaccount.models import SocialLogin, SocialToken, SocialApp
+from allauth.socialaccount.providers.facebook.views import fb_complete_login
+from allauth.socialaccount.helpers import complete_social_login
+import allauth.account
 
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -127,15 +127,9 @@ def new_comparison_page(request):
         form = ComparisonForm(request.POST)
         if form.is_valid():
             comparison = form.save(commit=False)
+            comparison.owner = request.user
 
 
-            split_url = comparison.profile_url.split('/')
-            short_name = split_url.pop()
-
-            user_json = requests.request('GET', 'http://graph.facebook.com' + short_name)
-            uid = user_json.id
-
-            return render(request, 'nice_simple_app/new_comparison_page.html', {'form': form, 'errors': ('good',comparison.profile_url, uid,)})
 
             # # connect up and fetch the website
             # req = requests.request('GET', comparison.profile_url)
@@ -143,8 +137,12 @@ def new_comparison_page(request):
 
             # collect initial data
             comparison.collected_date = timezone.now()
-            creator = get_object_or_404(User, username='admin')
+            creator = request.user
+            access_token = SocialToken.objects.get(account__user=creator,account__provider='facebook')
             comparison.collected_by = creator
+            user_json = requests.request('GET', 'https://graph.facebook.com/me?access_token='+access_token.token+'&fields=id,name,email')
+
+#            return render(request, 'nice_simple_app/new_comparison_page.html', {'form': form, 'errors': (user_json,)})
 
             # create the related profile instances
             pub_profile = Profile()
@@ -283,7 +281,11 @@ def new_comparison_page(request):
             comparison.l_profile = pub_profile
             comparison.r_profile = priv_profile
             comparison.save()
-
+            return render(request, 'nice_simple_app/comparison_page.html', {
+            'comparison':comparison,
+            'l_profile':pub_profile,
+            'r_profile':priv_profile,
+        })
     else:
         form = ComparisonForm()
         return render(request, 'nice_simple_app/new_comparison_page.html', {'form': form})

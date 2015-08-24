@@ -6,6 +6,7 @@ from django.utils import timezone
 
 class Profile(models.Model):
 
+    owner = models.ForeignKey('auth.User', related_name='nice_simple_app')
     collected_date = models.DateTimeField(default=timezone.now)
     public_view = models.BooleanField(default=True)
     img_url = models.URLField()

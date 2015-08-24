@@ -7,6 +7,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('id',
+                  'owner',
                   'public_view',
                   'img_url',
                   'p_name',
